@@ -22,8 +22,12 @@ const Pulsar = require('pulsar-client');
 (async () => {
   // Create a client
   const client = new Pulsar.Client({
-    serviceUrl: 'pulsar://localhost:6650',
+    serviceUrl: 'pulsar://pulsar-service:6650',
     operationTimeoutSeconds: 30,
+  });
+
+  Pulsar.Client.setLogHandler((level, file, line, message) => {
+    console.log('[%s][%s:%d] %s', Pulsar.LogLevel.toString(level), file, line, message);
   });
 
   // Create a producer

@@ -3,7 +3,7 @@ const Pulsar = require('pulsar-client');
 async function main() {
 
   const client = new Pulsar.Client({
-    serviceUrl: 'pulsar://localhost:6650',
+    serviceUrl: 'pulsar://pulsar-service:6650',
   });
 
   Pulsar.Client.setLogHandler((level, file, line, message) => {
@@ -27,10 +27,19 @@ async function main() {
   while (true) {
     const messages = await consumer.batchReceive();
     console.log(`Received ${messages.length} messages`);
-    for (const msg of messages) {
-      consumer.acknowledge(msg);
+    if (Math.floor(Math.random() * 100) < 3) {
+      // io sleep();
+      for (const msg of messages) {
+        consumer.negativeAcknowledge(msg);
+      }
+      console.log(`Uacked ${messages.length} messages`);
+    } else {
+      // io sleep();
+      for (const msg of messages) {
+        consumer.acknowledge(msg);
+      }
+      console.log(`Acked ${messages.length} messages`);
     }
-    console.log(`Acked ${messages.length} messages`);
   }
 }
 
