@@ -38,7 +38,7 @@ const Pulsar = require('pulsar-client');
   });
 
   // Send messages
-  for (let i = 0; i < 10000000000; i += 1) {
+  for (let i = 0; i < 6000000; i += 1) {
     const msg = `my-message-${i}`;
     producer.send({
       data: Buffer.from(msg),

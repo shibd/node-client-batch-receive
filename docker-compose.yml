@@ -23,6 +23,16 @@ services:
         condition: service_healthy
 #    command: ["pm2-runtime", "batch_receive.js"]
     command: ["tail", "-f", "/dev/null"]
+  batch-receive2:
+    container_name: batch-receive2
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      pulsar-service:
+        condition: service_healthy
+    #    command: ["pm2-runtime", "batch_receive.js"]
+    command: ["tail", "-f", "/dev/null"]
   batch-producer:
     container_name: batch-producer
     build:
