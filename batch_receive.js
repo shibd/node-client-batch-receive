@@ -28,19 +28,24 @@ async function main() {
     const messages = await consumer.batchReceive();
     console.log(`Received ${messages.length} messages`);
     if (Math.floor(Math.random() * 100) < 3) {
-      // io sleep();
+      await wait(3000);
       for (const msg of messages) {
         consumer.negativeAcknowledge(msg);
       }
       console.log(`Uacked ${messages.length} messages`);
     } else {
-      // io sleep();
+      await wait(3000);
       for (const msg of messages) {
         consumer.acknowledge(msg);
       }
       console.log(`Acked ${messages.length} messages`);
     }
+    await wait(15000);
   }
+}
+
+async function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 main();
