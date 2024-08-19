@@ -1,3 +1,18 @@
+Test Env:
+- uname-m: x86_64
+- lsb_release -a
+```shell
+  No LSB modules are available.
+  Distributor ID: Ubuntu
+  Description:    Ubuntu 22.04.4 LTS
+  Release:        22.04
+  Codename:       jammy
+```
+- ldd --version
+```shell
+ldd (Ubuntu GLIBC 2.35-0ubuntu3.8) 2.35
+```
+
 ## 1. Step up pulsar 
 docker compose up
 
