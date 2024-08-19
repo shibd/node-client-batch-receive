@@ -22,19 +22,19 @@ async function main() {
     receiverQueueSize: 30000
   });
 
-  console.log('consumer created');
+  console.info('consumer created');
   while (true) {
-    console.log(`Start call batch receive`);
+    console.info(`Start call batch receive`);
     const messages = await consumer.batchReceive();
-    console.log(`Received ${messages.length} messages`);
+    console.info(`Received ${messages.length} messages`);
     if (Math.floor(Math.random() * 100) < 2) {
       await wait(2000);
       await Promise.all(messages.map(msg => consumer.negativeAcknowledge(msg)));
-      console.log(`NegativeAcknowledge ${messages.length} messages`);
+      console.info(`NegativeAcknowledge ${messages.length} messages`);
     } else {
       await wait(2000);
       await Promise.all(messages.map(msg => consumer.acknowledge(msg)));
-      console.log(`Acknowledge ${messages.length} messages`);
+      console.info(`Acknowledge ${messages.length} messages`);
     }
     await wait(15000);
   }
