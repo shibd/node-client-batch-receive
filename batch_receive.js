@@ -3,7 +3,7 @@ const Pulsar = require('pulsar-client');
 async function main() {
 
   const client = new Pulsar.Client({
-    serviceUrl: 'pulsar://pulsar-service:6650',
+    serviceUrl: 'pulsar://localhost:6650',
   });
 
   Pulsar.Client.setLogHandler((level, file, line, message) => {
@@ -13,30 +13,43 @@ async function main() {
   const consumer = await client.subscribe({
     subscription: 'test-sub',
     subscriptionType: 'Shared',
-    topic: 'persistent://public/default/batch-receive',
+    topic: 'persistent://public/default/batch-receive4',
     batchReceivePolicy: {
       timeoutMs: 60000,
-      maxNumMessages: 6000,
+      maxNumMessages: 200,
       maxNumBytes: -1
     },
     receiverQueueSize: 30000
   });
 
-  console.info('consumer created');
+  // Set to store processed messageIds
+  const processedMessageIds = new Set();
+
   while (true) {
-    console.info(`Start call batch receive`);
+    console.info('Start call batch receive');
     const messages = await consumer.batchReceive();
     console.info(`Received ${messages.length} messages`);
-    if (Math.floor(Math.random() * 100) < 2) {
-      await wait(2000);
-      await Promise.all(messages.map(msg => consumer.negativeAcknowledge(msg)));
-      console.info(`NegativeAcknowledge ${messages.length} messages`);
-    } else {
-      await wait(2000);
-      await Promise.all(messages.map(msg => consumer.acknowledge(msg)));
-      console.info(`Acknowledge ${messages.length} messages`);
+
+    for (const msg of messages) {
+      const messageId = msg.getMessageId().toString();
+      console.log(`Received message: ${messageId}`);
+
+      if (Math.floor(Math.random() * 100) < 50) {
+        await consumer.acknowledge(msg);
+        console.info(`Acknowledge ${messageId} messages`);
+      } else {
+        await consumer.negativeAcknowledge(msg);
+        console.info(`Nack acknowledge ${messageId} messages`);
+        continue
+      }
+
+      if (processedMessageIds.has(messageId)) {
+        console.warn(`Received duplicate messageId: ${messageId}`);
+      } else {
+        processedMessageIds.add(messageId);
+      }
     }
-    await wait(15000);
+    await wait(2000);
   }
 }
 

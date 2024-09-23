@@ -2,9 +2,11 @@ version: "2.4"
 services:
   pulsar-service:
     image: apachepulsar/pulsar:3.3.1
-    command: "bin/pulsar standalone"
+    command: >
+      sh -c "bin/apply-config-from-env.py conf/standalone.conf && bin/pulsar standalone"
     environment:
       - PULSAR_STANDALONE_USE_ZOOKEEPER=1
+      - PULSAR_PREFIX_managedLedgerMaxEntriesPerLedger=100
     ports:
       - '8080:8080'
       - '6650:6650'
@@ -13,33 +15,33 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
-  batch-receive:
-    container_name: batch-receive
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    depends_on:
-      pulsar-service:
-        condition: service_healthy
-#    command: ["pm2-runtime", "batch_receive.js"]
-    command: ["tail", "-f", "/dev/null"]
-  batch-receive2:
-    container_name: batch-receive2
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    depends_on:
-      pulsar-service:
-        condition: service_healthy
-    #    command: ["pm2-runtime", "batch_receive.js"]
-    command: ["tail", "-f", "/dev/null"]
-  batch-producer:
-    container_name: batch-producer
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    depends_on:
-      pulsar-service:
-        condition: service_healthy
-#    command: ["pm2-runtime", "producer.js"]
-    command: ["tail", "-f", "/dev/null"]
+#  batch-receive:
+#    container_name: batch-receive
+#    build:
+#      context: .
+#      dockerfile: ./Dockerfile
+#    depends_on:
+#      pulsar-service:
+#        condition: service_healthy
+##    command: ["pm2-runtime", "batch_receive.js"]
+#    command: ["tail", "-f", "/dev/null"]
+#  batch-receive2:
+#    container_name: batch-receive2
+#    build:
+#      context: .
+#      dockerfile: ./Dockerfile
+#    depends_on:
+#      pulsar-service:
+#        condition: service_healthy
+#    #    command: ["pm2-runtime", "batch_receive.js"]
+#    command: ["tail", "-f", "/dev/null"]
+#  batch-producer:
+#    container_name: batch-producer
+#    build:
+#      context: .
+#      dockerfile: ./Dockerfile
+#    depends_on:
+#      pulsar-service:
+#        condition: service_healthy
+##    command: ["pm2-runtime", "producer.js"]
+#    command: ["tail", "-f", "/dev/null"]

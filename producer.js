@@ -22,7 +22,7 @@ const Pulsar = require('pulsar-client');
 (async () => {
   // Create a client
   const client = new Pulsar.Client({
-    serviceUrl: 'pulsar://pulsar-service:6650',
+    serviceUrl: 'pulsar://localhost:6650',
     operationTimeoutSeconds: 30,
   });
 
@@ -32,18 +32,27 @@ const Pulsar = require('pulsar-client');
 
   // Create a producer
   const producer = await client.createProducer({
-    topic: 'persistent://public/default/batch-receive',
+    topic: 'persistent://public/default/batch-receive4',
     sendTimeoutMs: 30000,
     batchingEnabled: true,
+    batchingMaxMessages: 100,
+    blockIfQueueFull: true,
   });
 
+  const generateLargeMessage = (sizeInMB) => {
+    const sizeInBytes = sizeInMB * 1024;
+    return 'A'.repeat(sizeInBytes);
+  };
+
+  const largeMessage = generateLargeMessage(1); // 生成1MB大小的消息
+
   // Send messages
-  for (let i = 0; i < 6000000; i += 1) {
-    const msg = `my-message-${i}`;
+  for (let i = 0; i < 6000; i += 1) {
+    const msg = `my-message-${largeMessage}`;
     producer.send({
       data: Buffer.from(msg),
     });
-    console.log(`Sent message: ${msg}`);
+    console.log(`Sent message: ${i}`);
   }
   await producer.flush();
 

@@ -11,6 +11,10 @@ RUN apt-get update && apt-get install -y \
     librsvg2-dev \
     rsync \
     procps
+
+RUN apt-get install valgrind
+RUN apt-get install gdb
+
 # Remove /etc/timezone, create /app directory, and install pm2 globally
 RUN rm -rf /etc/timezone && \
     mkdir /app && \
@@ -19,7 +23,7 @@ RUN pm2 install pm2-logrotate@2.6
 RUN pm2 set pm2-logrotate:rotateInterval '0 * * * *'
 RUN pm2 set pm2-logrotate:retain 72
 RUN pm2 set pm2-logrotate:compress true
-RUN pm2 set pm2-logrotate:max_size 3G
+RUN pm2 set pm2-logsessionrotate:max_size 3G
 
 COPY ./package.json /app/
 COPY ./producer.js /app/
