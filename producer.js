@@ -32,10 +32,10 @@ const Pulsar = require('pulsar-client');
 
   // Create a producer
   const producer = await client.createProducer({
-    topic: 'persistent://public/default/batch-receive4',
+    topic: 'persistent://public/default/batch-receive6',
     sendTimeoutMs: 30000,
     batchingEnabled: true,
-    batchingMaxMessages: 100,
+    batchingMaxMessages: 60,
     blockIfQueueFull: true,
   });
 
@@ -47,8 +47,8 @@ const Pulsar = require('pulsar-client');
   const largeMessage = generateLargeMessage(1); // 生成1MB大小的消息
 
   // Send messages
-  for (let i = 0; i < 6000; i += 1) {
-    const msg = `my-message-${largeMessage}`;
+  for (let i = 0; i < 60; i += 1) {
+    const msg = `my-message-${i}`;
     producer.send({
       data: Buffer.from(msg),
     });
